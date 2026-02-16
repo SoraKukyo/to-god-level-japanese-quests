@@ -6,9 +6,10 @@ interface QuizCompleteProps {
   score: number;
   total: number;
   onRestart: () => void;
+  onBackToLevels?: () => void;
 }
 
-export function QuizComplete({ score, total, onRestart }: QuizCompleteProps) {
+export function QuizComplete({ score, total, onRestart, onBackToLevels }: QuizCompleteProps) {
   const percentage = Math.round((score / total) * 100);
 
   return (
@@ -32,10 +33,17 @@ export function QuizComplete({ score, total, onRestart }: QuizCompleteProps) {
         You got <span className="font-semibold text-foreground">{score}</span> out of{" "}
         <span className="font-semibold text-foreground">{total}</span> correct
       </p>
-      <Button onClick={onRestart} size="lg" className="mt-2 gap-2">
-        <RotateCcw className="h-4 w-4" />
-        Try Again
-      </Button>
+      <div className="flex gap-3 mt-2">
+        {onBackToLevels && (
+          <Button onClick={onBackToLevels} size="lg" variant="outline" className="gap-2">
+            All Levels
+          </Button>
+        )}
+        <Button onClick={onRestart} size="lg" className="gap-2">
+          <RotateCcw className="h-4 w-4" />
+          Try Again
+        </Button>
+      </div>
     </motion.div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { vocabulary, type VocabWord } from "@/data/vocabulary";
+import { vocabulary, getLevel, type VocabWord } from "@/data/vocabulary";
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array];
@@ -22,14 +22,15 @@ export interface QuizState {
 }
 
 export function useQuiz() {
-  const [queue, setQueue] = useState<VocabWord[]>(() => shuffle(vocabulary));
+  const [level, setLevel] = useState<number | null>(null);
+  const [queue, setQueue] = useState<VocabWord[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
 
   const totalQuestions = queue.length;
-  const currentWord = queue[questionIndex] ?? queue[0];
+  const currentWord = queue[questionIndex] ?? null;
 
   const options = useMemo(() => {
     if (!currentWord) return [];
@@ -65,15 +66,33 @@ export function useQuiz() {
     }
   }, [questionIndex, totalQuestions]);
 
-  const restart = useCallback(() => {
-    setQueue(shuffle(vocabulary));
+  const selectLevel = useCallback((lvl: number) => {
+    const words = getLevel(lvl);
+    setQueue(shuffle(words));
+    setLevel(lvl);
     setQuestionIndex(0);
     setScore(0);
     setSelectedAnswer(null);
     setIsComplete(false);
   }, []);
 
+  const backToLevels = useCallback(() => {
+    setLevel(null);
+    setQueue([]);
+    setQuestionIndex(0);
+    setScore(0);
+    setSelectedAnswer(null);
+    setIsComplete(false);
+  }, []);
+
+  const restart = useCallback(() => {
+    if (level !== null) {
+      selectLevel(level);
+    }
+  }, [level, selectLevel]);
+
   return {
+    level,
     currentWord,
     options,
     selectedAnswer,
@@ -85,5 +104,7 @@ export function useQuiz() {
     selectAnswer,
     nextQuestion,
     restart,
+    selectLevel,
+    backToLevels,
   };
 }
