@@ -367,3 +367,14 @@ export const vocabulary: VocabWord[] = [
   { kanji: "デモ", romaji: "demo", meaning: "demonstration" },
   { kanji: "実演", romaji: "jitsuen", meaning: "demonstration" },
 ];
+
+const LEVEL_SIZE = 50;
+
+export function getLevel(levelNumber: number): VocabWord[] {
+  const start = (levelNumber - 1) * LEVEL_SIZE;
+  return vocabulary.slice(start, start + LEVEL_SIZE);
+}
+
+export function getTotalLevels(): number {
+  return Math.ceil(vocabulary.length / LEVEL_SIZE);
+}

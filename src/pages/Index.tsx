@@ -2,12 +2,14 @@ import { useQuiz } from "@/hooks/useQuiz";
 import { QuizCard } from "@/components/QuizCard";
 import { QuizComplete } from "@/components/QuizComplete";
 import { AnswerButton } from "@/components/AnswerButton";
+import { LevelSelect } from "@/components/LevelSelect";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Index = () => {
   const {
+    level,
     currentWord,
     options,
     selectedAnswer,
@@ -19,11 +21,13 @@ const Index = () => {
     selectAnswer,
     nextQuestion,
     restart,
+    selectLevel,
+    backToLevels,
   } = useQuiz();
 
   const getOptionState = (option: string) => {
     if (selectedAnswer === null) return "default" as const;
-    if (option === currentWord.meaning) return "correct" as const;
+    if (option === currentWord?.meaning) return "correct" as const;
     if (option === selectedAnswer) return "wrong" as const;
     return "revealed" as const;
   };
@@ -33,44 +37,60 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="mx-auto flex max-w-xl items-center justify-between px-4 py-3">
-          <h1 className="text-base font-semibold text-foreground tracking-tight sm:text-lg">
-            <span className="font-japanese">日本語</span> Work Vocab
-          </h1>
+          <div className="flex items-center gap-2">
+            {level !== null && (
+              <Button variant="ghost" size="icon" onClick={backToLevels} className="h-8 w-8">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+            <h1 className="text-base font-semibold text-foreground tracking-tight sm:text-lg">
+              <span className="font-japanese">日本語</span> Work Vocab
+            </h1>
+          </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-muted-foreground">
-              Score:{" "}
-              <span className="font-semibold text-primary">{score}</span>
-            </span>
+            {level !== null && (
+              <>
+                <span className="text-muted-foreground text-xs">Lv.{level}</span>
+                <span className="text-muted-foreground">
+                  Score: <span className="font-semibold text-primary">{score}</span>
+                </span>
+              </>
+            )}
           </div>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="mx-auto w-full max-w-xl px-4 pt-4">
-        <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-primary"
-            initial={{ width: 0 }}
-            animate={{
-              width: `${((isComplete ? totalQuestions : questionNumber - 1) / totalQuestions) * 100}%`,
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          />
+      {level !== null && (
+        <div className="mx-auto w-full max-w-xl px-4 pt-4">
+          <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+            <motion.div
+              className="h-full rounded-full bg-primary"
+              initial={{ width: 0 }}
+              animate={{
+                width: `${((isComplete ? totalQuestions : questionNumber - 1) / totalQuestions) * 100}%`,
+              }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-8">
         <div className="w-full max-w-xl space-y-6">
           <AnimatePresence mode="wait">
-            {isComplete ? (
+            {level === null ? (
+              <LevelSelect key="levels" onSelectLevel={selectLevel} />
+            ) : isComplete ? (
               <QuizComplete
                 key="complete"
                 score={score}
                 total={totalQuestions}
                 onRestart={restart}
+                onBackToLevels={backToLevels}
               />
-            ) : (
+            ) : currentWord ? (
               <motion.div
                 key={questionNumber}
                 initial={{ opacity: 0 }}
@@ -121,7 +141,7 @@ const Index = () => {
                   )}
                 </AnimatePresence>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       </main>
