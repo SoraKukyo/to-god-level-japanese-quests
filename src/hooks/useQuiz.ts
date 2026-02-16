@@ -22,30 +22,32 @@ export interface QuizState {
 }
 
 export function useQuiz() {
-  const totalQuestions = vocabulary.length;
   const [queue, setQueue] = useState<VocabWord[]>(() => shuffle(vocabulary));
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
 
-  const currentWord = queue[questionIndex];
+  const totalQuestions = queue.length;
+  const currentWord = queue[questionIndex] ?? queue[0];
 
   const options = useMemo(() => {
     if (!currentWord) return [];
     const wrongAnswers = vocabulary
-      .filter((w) => w.kanji !== currentWord.kanji)
+      .filter((w) => w.meaning !== currentWord.meaning)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
       .map((w) => w.meaning);
     return shuffle([currentWord.meaning, ...wrongAnswers]);
   }, [currentWord]);
 
-  const isCorrect = selectedAnswer === null ? null : selectedAnswer === currentWord.meaning;
+  const isCorrect = selectedAnswer === null || !currentWord
+    ? null
+    : selectedAnswer === currentWord.meaning;
 
   const selectAnswer = useCallback(
     (answer: string) => {
-      if (selectedAnswer !== null) return;
+      if (selectedAnswer !== null || !currentWord) return;
       setSelectedAnswer(answer);
       if (answer === currentWord.meaning) {
         setScore((s) => s + 1);
