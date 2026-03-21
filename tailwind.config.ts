@@ -55,6 +55,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "section-kanji": "hsl(var(--section-kanji))",
+        "section-vocabulary": "hsl(var(--section-vocabulary))",
+        "section-grammar": "hsl(var(--section-grammar))",
+        "section-phrases": "hsl(var(--section-phrases))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

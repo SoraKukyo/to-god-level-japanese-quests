@@ -6,41 +6,44 @@
 
 @layer base {
   :root {
-    --background: 210 33% 97%;
-    --foreground: 215 30% 18%;
+    --background: 40 20% 97%;
+    --foreground: 30 10% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 30% 18%;
+    --card-foreground: 30 10% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 30% 18%;
+    --popover-foreground: 30 10% 12%;
 
-    --primary: 217 72% 53%;
+    --primary: 4 68% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 25% 93%;
-    --secondary-foreground: 215 30% 25%;
+    --secondary: 40 15% 93%;
+    --secondary-foreground: 30 10% 25%;
 
-    --muted: 210 20% 94%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 40 10% 94%;
+    --muted-foreground: 30 8% 50%;
 
-    --accent: 210 30% 90%;
-    --accent-foreground: 215 30% 18%;
+    --accent: 40 20% 90%;
+    --accent-foreground: 30 10% 12%;
 
-    --destructive: 0 72% 58%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     --success: 152 60% 42%;
     --success-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 217 72% 53%;
+    --border: 30 15% 88%;
+    --input: 30 15% 88%;
+    --ring: 4 68% 52%;
 
     --radius: 0.75rem;
 
-    --kanji-size: 4rem;
-    --romaji-size: 1.125rem;
+    /* Section accent colors */
+    --section-kanji: 4 68% 52%;
+    --section-vocabulary: 217 80% 55%;
+    --section-grammar: 152 60% 42%;
+    --section-phrases: 38 92% 50%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -53,27 +56,33 @@
   }
 
   .dark {
-    --background: 220 20% 10%;
-    --foreground: 210 25% 92%;
-    --card: 220 18% 14%;
-    --card-foreground: 210 25% 92%;
-    --popover: 220 18% 14%;
-    --popover-foreground: 210 25% 92%;
-    --primary: 217 72% 58%;
+    --background: 30 10% 8%;
+    --foreground: 40 15% 90%;
+    --card: 30 10% 12%;
+    --card-foreground: 40 15% 90%;
+    --popover: 30 10% 12%;
+    --popover-foreground: 40 15% 90%;
+    --primary: 4 68% 58%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 210 25% 85%;
-    --muted: 220 15% 18%;
-    --muted-foreground: 215 15% 55%;
-    --accent: 220 15% 22%;
-    --accent-foreground: 210 25% 92%;
+    --secondary: 30 10% 18%;
+    --secondary-foreground: 40 15% 85%;
+    --muted: 30 10% 16%;
+    --muted-foreground: 30 8% 55%;
+    --accent: 30 10% 20%;
+    --accent-foreground: 40 15% 90%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 40 15% 98%;
     --success: 152 55% 38%;
     --success-foreground: 0 0% 100%;
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 217 72% 58%;
+    --border: 30 10% 20%;
+    --input: 30 10% 20%;
+    --ring: 4 68% 58%;
+
+    --section-kanji: 4 68% 58%;
+    --section-vocabulary: 217 80% 60%;
+    --section-grammar: 152 55% 45%;
+    --section-phrases: 38 85% 55%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -97,5 +106,14 @@
 @layer utilities {
   .font-japanese {
     font-family: 'Noto Sans JP', sans-serif;
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  .rotate-y-180 {
+    transform: rotateY(180deg);
   }
 }
