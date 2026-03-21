@@ -117,3 +117,38 @@
     transform: rotateY(180deg);
   }
 }
+
+/* Floating kanji animation */
+@keyframes float-kanji {
+  0% {
+    transform: translate3d(0, 0, 0) rotate3d(1, 1, 0, var(--rot-start));
+  }
+  33% {
+    transform: translate3d(var(--float-x), var(--float-y), 0) rotate3d(1, 0.5, 0.5, calc(var(--rot-start) + 120deg));
+  }
+  66% {
+    transform: translate3d(calc(var(--float-x) * -0.5), calc(var(--float-y) * 0.5), 0) rotate3d(0.5, 1, 0.5, calc(var(--rot-start) + 240deg));
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate3d(1, 1, 0, calc(var(--rot-start) + 360deg));
+  }
+}
+
+.floating-kanji {
+  animation: float-kanji var(--duration, 20s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+/* Hide extra floating kanji on mobile for performance */
+@media (max-width: 640px) {
+  .floating-kanji[data-index="10"],
+  .floating-kanji[data-index="11"],
+  .floating-kanji[data-index="12"],
+  .floating-kanji[data-index="13"],
+  .floating-kanji[data-index="14"],
+  .floating-kanji[data-index="15"],
+  .floating-kanji[data-index="16"],
+  .floating-kanji[data-index="17"] {
+    display: none;
+  }
+}

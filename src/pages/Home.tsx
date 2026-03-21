@@ -4,6 +4,8 @@ import { sectionMeta } from "@/data/data";
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
+import { FloatingKanji } from "@/components/FloatingKanji";
+import { TiltCard } from "@/components/TiltCard";
 
 const sectionColors: Record<string, string> = {
   kanji: "bg-section-kanji",
@@ -12,25 +14,25 @@ const sectionColors: Record<string, string> = {
   phrases: "bg-section-phrases",
 };
 
-const sectionBorders: Record<string, string> = {
-  kanji: "border-section-kanji/30 hover:border-section-kanji/60",
-  vocabulary: "border-section-vocabulary/30 hover:border-section-vocabulary/60",
-  grammar: "border-section-grammar/30 hover:border-section-grammar/60",
-  phrases: "border-section-phrases/30 hover:border-section-phrases/60",
-};
-
-const sectionBg: Record<string, string> = {
-  kanji: "hover:bg-section-kanji/5",
-  vocabulary: "hover:bg-section-vocabulary/5",
-  grammar: "hover:bg-section-grammar/5",
-  phrases: "hover:bg-section-phrases/5",
-};
-
 const sectionTextColors: Record<string, string> = {
   kanji: "text-section-kanji",
   vocabulary: "text-section-vocabulary",
   grammar: "text-section-grammar",
   phrases: "text-section-phrases",
+};
+
+const sectionGlowColors: Record<string, string> = {
+  kanji: "shadow-section-kanji/20",
+  vocabulary: "shadow-section-vocabulary/20",
+  grammar: "shadow-section-grammar/20",
+  phrases: "shadow-section-phrases/20",
+};
+
+const sectionBorderAccent: Record<string, string> = {
+  kanji: "border-l-section-kanji",
+  vocabulary: "border-l-section-vocabulary",
+  grammar: "border-l-section-grammar",
+  phrases: "border-l-section-phrases",
 };
 
 export default function Home() {
@@ -43,13 +45,8 @@ export default function Home() {
   return (
     <div className="flex min-h-svh flex-col bg-background">
       {/* Hero */}
-      <section className="relative flex min-h-svh flex-col items-center justify-center px-4 text-center">
-        {/* Decorative background characters */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden select-none" aria-hidden>
-          <span className="absolute top-[10%] left-[8%] font-japanese text-[12rem] font-bold text-foreground/[0.03] leading-none">学</span>
-          <span className="absolute bottom-[15%] right-[10%] font-japanese text-[10rem] font-bold text-foreground/[0.03] leading-none">道</span>
-          <span className="absolute top-[40%] right-[5%] font-japanese text-[8rem] font-bold text-foreground/[0.03] leading-none">文</span>
-        </div>
+      <section className="relative flex min-h-svh flex-col items-center justify-center px-4 text-center overflow-hidden">
+        <FloatingKanji />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -73,7 +70,14 @@ export default function Home() {
       </section>
 
       {/* Exercise Menu */}
-      <section id="exercises" className="mx-auto w-full max-w-4xl px-4 py-20">
+      <section id="exercises" className="relative mx-auto w-full max-w-4xl px-4 py-20">
+        {/* Mesh gradient background for glassmorphism */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+          <div className="absolute -top-20 -left-20 h-80 w-80 rounded-full bg-[hsl(20_70%_85%)] opacity-40 blur-[100px]" />
+          <div className="absolute top-40 -right-20 h-72 w-72 rounded-full bg-[hsl(260_50%_85%)] opacity-30 blur-[100px]" />
+          <div className="absolute -bottom-10 left-1/3 h-64 w-64 rounded-full bg-[hsl(140_40%_85%)] opacity-30 blur-[100px]" />
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -91,25 +95,27 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           {Object.entries(sectionMeta).map(([key, meta], i) => (
-            <motion.button
+            <motion.div
               key={key}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.08 }}
-              onClick={() => navigate(`/${key}`)}
-              className={`group relative flex flex-col items-start gap-4 rounded-2xl border-2 bg-card p-8 text-left transition-all duration-200 cursor-pointer ${sectionBorders[key]} ${sectionBg[key]}`}
             >
-              <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${sectionColors[key]} text-white`}>
-                <span className="font-japanese text-2xl font-bold">{meta.icon}</span>
-              </div>
-              <div>
-                <h3 className={`text-xl font-bold ${sectionTextColors[key]}`}>
-                  {meta.title}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">{meta.description}</p>
-              </div>
-            </motion.button>
+              <TiltCard onClick={() => navigate(`/${key}`)} className={sectionGlowColors[key]}>
+                <div className={`flex flex-col items-start gap-4 rounded-2xl border border-white/25 border-l-4 ${sectionBorderAccent[key]} bg-white/15 p-8 text-left backdrop-blur-xl dark:border-white/10 dark:bg-black/25`}>
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${sectionColors[key]} text-white`}>
+                    <span className="font-japanese text-2xl font-bold">{meta.icon}</span>
+                  </div>
+                  <div>
+                    <h3 className={`text-xl font-bold ${sectionTextColors[key]}`}>
+                      {meta.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{meta.description}</p>
+                  </div>
+                </div>
+              </TiltCard>
+            </motion.div>
           ))}
         </div>
       </section>
