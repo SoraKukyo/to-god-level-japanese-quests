@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getCards, getSublevelName, sectionMeta } from "@/data/data";
 import type { FlashCard } from "@/data/data";
 import { Flashcard } from "@/components/Flashcard";
+import { QuizCard } from "@/components/QuizCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw, Trophy, ArrowRight } from "lucide-react";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -35,6 +36,8 @@ export default function PracticePage() {
   const allCards = getCards(section ?? "", decodedCategory, sublevelIndex);
   const sublevelName = getSublevelName(section ?? "", decodedCategory, sublevelIndex);
 
+  const isQuizMode = section === "kanji" || section === "vocabulary";
+
   const [queue, setQueue] = useState<FlashCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [knownCount, setKnownCount] = useState(0);
@@ -55,53 +58,53 @@ export default function PracticePage() {
 
   const currentCard = queue[currentIndex] ?? null;
 
-  const handleKnow = useCallback(() => {
-    const newKnown = knownCount + 1;
-    setKnownCount(newKnown);
-    setIsFlipped(false);
-
-    // Save progress
+  const saveProgress = useCallback((known: number) => {
     try {
       localStorage.setItem(
         progressKey(section ?? "", decodedCategory, sublevelIndex),
-        JSON.stringify({ known: newKnown, total: totalSeen })
+        JSON.stringify({ known, total: totalSeen })
       );
     } catch {}
+  }, [section, decodedCategory, sublevelIndex, totalSeen]);
 
-    if (currentIndex + 1 >= queue.length) {
-      if (stillLearning.length > 0) {
-        setQueue(shuffle(stillLearning));
-        setStillLearning([]);
-        setCurrentIndex(0);
-      } else {
-        setIsComplete(true);
-      }
-    } else {
-      setCurrentIndex((i) => i + 1);
+  const advance = useCallback((addToLearning: boolean) => {
+    const card = currentCard;
+    if (!addToLearning) {
+      const newKnown = knownCount + 1;
+      setKnownCount(newKnown);
+      saveProgress(newKnown);
     }
-  }, [knownCount, currentIndex, queue.length, stillLearning, section, decodedCategory, sublevelIndex, totalSeen]);
 
-  const handleStillLearning = useCallback(() => {
-    if (currentCard) {
-      setStillLearning((prev) => [...prev, currentCard]);
+    const newStillLearning = addToLearning && card
+      ? [...stillLearning, card]
+      : stillLearning;
+
+    if (!addToLearning) {
+      // don't update stillLearning
+    } else if (card) {
+      setStillLearning(prev => [...prev, card]);
     }
+
     setIsFlipped(false);
 
     if (currentIndex + 1 >= queue.length) {
-      if (stillLearning.length > 0 || currentCard) {
-        const next = currentCard
-          ? [...stillLearning, currentCard]
-          : [...stillLearning];
-        setQueue(shuffle(next));
+      const pending = addToLearning && card
+        ? [...stillLearning, card]
+        : stillLearning;
+      if (pending.length > 0) {
+        setQueue(shuffle(pending));
         setStillLearning([]);
         setCurrentIndex(0);
       } else {
         setIsComplete(true);
       }
     } else {
-      setCurrentIndex((i) => i + 1);
+      setCurrentIndex(i => i + 1);
     }
-  }, [currentCard, currentIndex, queue.length, stillLearning]);
+  }, [currentCard, knownCount, currentIndex, queue.length, stillLearning, saveProgress]);
+
+  const handleKnow = useCallback(() => advance(false), [advance]);
+  const handleStillLearning = useCallback(() => advance(true), [advance]);
 
   const restart = useCallback(() => {
     setQueue(shuffle(allCards));
@@ -112,16 +115,6 @@ export default function PracticePage() {
     setTotalSeen(allCards.length);
     setStillLearning([]);
   }, [allCards]);
-
-  const reviewMissed = useCallback(() => {
-    if (stillLearning.length > 0) {
-      setQueue(shuffle(stillLearning));
-      setStillLearning([]);
-      setCurrentIndex(0);
-      setIsFlipped(false);
-      setIsComplete(false);
-    }
-  }, [stillLearning]);
 
   if (!meta || allCards.length === 0) {
     return (
@@ -200,7 +193,9 @@ export default function PracticePage() {
                 <div className="font-japanese text-5xl font-bold text-foreground">
                   {knownCount}/{totalSeen}
                 </div>
-                <p className="text-sm text-muted-foreground">cards learned</p>
+                <p className="text-sm text-muted-foreground">
+                  {isQuizMode ? "correct answers" : "cards learned"}
+                </p>
                 <div className="flex flex-wrap justify-center gap-3 mt-2">
                   <Button
                     variant="outline"
@@ -225,35 +220,46 @@ export default function PracticePage() {
                 transition={{ duration: 0.2 }}
                 className="space-y-6"
               >
-                <Flashcard
-                  card={currentCard}
-                  isFlipped={isFlipped}
-                  onFlip={() => setIsFlipped((f) => !f)}
-                />
-
-                {isFlipped && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-center gap-4"
-                  >
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      onClick={handleStillLearning}
-                      className="gap-2 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      Still Learning
-                    </Button>
-                    <Button
-                      size="lg"
-                      onClick={handleKnow}
-                      className="gap-2 bg-success hover:bg-success/90 text-success-foreground"
-                    >
-                      Know It
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </motion.div>
+                {isQuizMode ? (
+                  <QuizCard
+                    card={currentCard}
+                    allCards={allCards}
+                    onCorrect={handleKnow}
+                    onWrong={handleStillLearning}
+                    sectionColor={sectionColorMap[section!]}
+                  />
+                ) : (
+                  <>
+                    <Flashcard
+                      card={currentCard}
+                      isFlipped={isFlipped}
+                      onFlip={() => setIsFlipped(f => !f)}
+                    />
+                    {isFlipped && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex justify-center gap-4"
+                      >
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={handleStillLearning}
+                          className="gap-2 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        >
+                          Still Learning
+                        </Button>
+                        <Button
+                          size="lg"
+                          onClick={handleKnow}
+                          className="gap-2 bg-success hover:bg-success/90 text-success-foreground"
+                        >
+                          Know It
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </motion.div>
+                    )}
+                  </>
                 )}
               </motion.div>
             ) : null}
