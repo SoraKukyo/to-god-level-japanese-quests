@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx lockfile-lint@5.0.0 --path package-lock.json --type npm --allowed-hosts npm --validate-https)",
+      "Bash(npm audit:*)",
+      "Bash(npm rebuild:*)",
+      "Bash(cursor:*)"
+    ]
+  }
+}

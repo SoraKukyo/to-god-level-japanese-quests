@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCards, getSublevelName, sectionMeta } from "@/data/data";
 import type { FlashCard } from "@/data/data";
@@ -31,10 +31,16 @@ export default function PracticePage() {
   }>();
   const navigate = useNavigate();
   const meta = sectionMeta[section ?? ""];
-  const decodedCategory = decodeURIComponent(category ?? "");
-  const sublevelIndex = parseInt(sublevel ?? "0", 10);
-  const allCards = getCards(section ?? "", decodedCategory, sublevelIndex);
-  const sublevelName = getSublevelName(section ?? "", decodedCategory, sublevelIndex);
+  const decodedCategory = useMemo(() => decodeURIComponent(category ?? ""), [category]);
+  const sublevelIndex = useMemo(() => parseInt(sublevel ?? "0", 10), [sublevel]);
+  const allCards = useMemo(
+    () => getCards(section ?? "", decodedCategory, sublevelIndex),
+    [section, decodedCategory, sublevelIndex]
+  );
+  const sublevelName = useMemo(
+    () => getSublevelName(section ?? "", decodedCategory, sublevelIndex),
+    [section, decodedCategory, sublevelIndex]
+  );
 
   const isQuizMode = section === "kanji" || section === "vocabulary";
 
@@ -214,10 +220,10 @@ export default function PracticePage() {
             ) : currentCard ? (
               <motion.div
                 key={currentCard.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                initial={{ opacity: 0, y: 10, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.99 }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 className="space-y-6"
               >
                 {isQuizMode ? (

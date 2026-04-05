@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(~/.ssh/**)",
+      "Read(~/.env)",
+      "Read(~/.aws/**)",
+      "Read(~/.gitconfig)",
+      "Bash(rm -rf*)",
+      "Bash(curl*)",
+      "Bash(wget*)",
+      "WebFetch"
+    ]
+  }
+}

@@ -43,7 +43,7 @@ export function QuizCard({ card, allCards, onCorrect, onWrong, sectionColor }: Q
         onWrong();
       }
       setSelected(null);
-    }, 800);
+    }, 630);
   };
 
   return (
@@ -73,7 +73,7 @@ export function QuizCard({ card, allCards, onCorrect, onWrong, sectionColor }: Q
               key={`${card.id}-${i}`}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.15, delay: i * 0.05 }}
+              transition={{ duration: 0.12, delay: i * 0.02 }}
               onClick={() => handleSelect(option)}
               disabled={selected !== null}
               className={cn(
