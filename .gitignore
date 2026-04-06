@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local AI/editor metadata
+.claude/
+.cursor/
+
+# Unnecessary local/temp folders
+tmp/
+temp/
+cache/
