@@ -1,0 +1,1 @@
+# to-god-level-japanese-quests
